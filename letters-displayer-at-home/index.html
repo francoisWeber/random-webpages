@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Check</title>
+    <script>
+        const displayLettersCounts = {
+          'a': 3, 'b': 2, 'c': 2, 'd': 2, 'e': 4, 'f': 2, 'g': 2, 'h': 2,
+          'i': 2, 'j': 2, 'k': 2, 'l': 2, 'm': 2, 'n': 2, 'o': 3, 'p': 2,
+          'q': 1, 'r': 2, 's': 2, 't': 3, 'u': 2, 'v': 2, 'w': 2, 'x': 1,
+          'y': 2, 'z': 2
+        };
+
+        function isSentencePossible(sentence, availableLettersCounts = displayLettersCounts) {
+          sentence = sentence.toLowerCase();
+          
+          const neededLettersCounts = {};
+          for (let i = 0; i < 26; i++) {
+            neededLettersCounts[String.fromCharCode(97 + i)] = 0;
+          }
+
+          for (let char of sentence) {
+            if (neededLettersCounts.hasOwnProperty(char)) {
+              neededLettersCounts[char]++;
+            }
+          }
+
+          for (let letter in neededLettersCounts) {
+            if (neededLettersCounts[letter] === 0) {
+              delete neededLettersCounts[letter];
+            }
+          }
+
+          const lettersLacks = {};
+          let sentencePossible = true;
+          let missingLettersMessage = "";  // Store missing letter messages here
+          
+          for (let letter in neededLettersCounts) {
+            lettersLacks[letter] = availableLettersCounts[letter] - neededLettersCounts[letter];
+            if (lettersLacks[letter] < 0) {
+              sentencePossible = false;
+              missingLettersMessage += `Missing ${Math.abs(lettersLacks[letter])} letter(s) '${letter}'<br>`;
+            }
+          }
+
+          // Display missing letters information on the webpage
+          document.getElementById("missingLetters").innerHTML = missingLettersMessage;
+          
+          return sentencePossible;
+        }
+
+        function checkSentence() {
+          const inputSentence = document.getElementById("sentenceInput").value;
+          const result = isSentencePossible(inputSentence);
+          document.getElementById("result").innerText = result ? 
+            "The sentence is possible!" : "The sentence is not possible!";
+        }
+
+        // Add event listener to the input field to listen for the "Enter" key
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("sentenceInput").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();  // Prevent default "Enter" behavior (like form submission)
+                    checkSentence();  // Trigger the button click function
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Check if Sentence is Possible</h1>
+    <label for="sentenceInput">Enter a sentence:</label>
+    <input type="text" id="sentenceInput">
+    <button onclick="checkSentence()">Check</button>
+    
+    <p id="result"></p>
+    <p id="missingLetters" style="color: red;"></p> <!-- This will display missing letters information -->
+</body>
+</html>
