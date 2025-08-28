@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Où habite François ?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 50px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://images.unsplash.com/photo-1448375240586-882707db888b');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(5px);
+            z-index: -2;
+        }
+        
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.5);
+            z-index: -1;
+        }
+        
+        h1 {
+            color: #000;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+        
+        h2 {
+            color: #000;
+            font-size: 1.8em;
+            font-weight: bold;
+            line-height: 1.4;
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <h2>Où habite François ?</h2>
+    <h1 id="random-text"></h1>
+
+    <script>
+        // Placeholder arrays for the 3 string components
+        const array1 = [
+            "testicules",
+            "bourses",
+            "couilles",
+            "noix",
+            "noisettes",
+            "joyaux-de-la-couronne",
+            "roustons",
+            "cacahuètes",
+            "bijoux-de-famille",
+            "glandes",
+            "roupettes",
+            "cojones",
+            "cacahuètes",
+            "burnes",
+            "coucougnettes",
+            "testicouilles",
+            "grelots",
+            "glandes",
+            "noyaux",
+            "glaouis",
+        ];
+        
+        const array2 = [
+            "sur",
+            "sous",
+            "lès",
+            "près",
+            "en",
+            "aux",
+            "des",
+            "les",
+            "devant",
+            "derrière",
+            "entre",
+            "côté",
+        ];
+        
+        const array3 = [
+            "arbres",
+            "buissons",
+            "bosquets",
+            "haies",
+            "fourrés",
+            "ronces",
+            "taillis",
+            "fougères",
+            "souches",
+            "troncs",
+            "branches",
+            "racines",
+            "roncières",
+            "massifs",
+            "vergers",
+            "prairies",
+            "champs",
+            "clairières",
+            "herbes",
+            "pelouses",
+            "gazons",
+            "potagers",
+            "jardins",
+            "parterres",
+            "landes",
+            "friches",
+            "sous-bois",
+            "forêts",
+            "bambouseraies",
+            "vignes",
+            "lianes",
+            "roseaux",
+            "buissonnailles",
+            "arbustes",
+            "plantes",
+            "brindilles",
+            "ramures",
+            "épines",
+            "ronciers"
+        ];
+        
+        // Function to get random element from array
+        function getRandomElement(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+        
+        // Generate the random text by concatenating 3 random strings
+        function generateRandomText() {
+            const part1 = getRandomElement(array1);
+            const part2 = getRandomElement(array2);
+            const part3 = getRandomElement(array3);
+            
+            return `À ${part1.charAt(0).toUpperCase() + part1.slice(1)}-${part2.charAt(0).toUpperCase() + part2.slice(1)}-${part3.charAt(0).toUpperCase() + part3.slice(1)}.`;
+        }
+        
+        // Set the random text when page loads
+        document.getElementById('random-text').textContent = generateRandomText();
+    </script>
+</body>
+</html>
