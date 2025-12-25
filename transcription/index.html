@@ -16,9 +16,230 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
+            gap: 20px;
+        }
+
+        .main-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .left-panel {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            min-width: 300px;
+            max-height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left-panel h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .prompt-form {
+            margin-bottom: 20px;
+        }
+
+        .prompt-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .prompt-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .prompts-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .prompt-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .prompt-item:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .prompt-item.active {
+            background: #e7f3ff;
+            border-color: #667eea;
+        }
+
+        .prompt-item-placeholder {
+            background: #f0f0f0;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .prompt-item-placeholder:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            opacity: 1;
+        }
+
+        .prompt-item-placeholder.active {
+            background: #e7f3ff;
+            border-color: #667eea;
+            opacity: 1;
+        }
+
+        .prompt-item-placeholder .prompt-item-title {
+            font-style: italic;
+            color: #999;
+        }
+
+        .prompt-item-placeholder.active .prompt-item-title {
+            color: #333;
+        }
+
+        .prompt-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prompt-item-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+            flex: 1;
+            word-break: break-word;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .prompt-item-title.editing {
+            background: white;
+            border: 2px solid #667eea;
+            outline: none;
+        }
+
+        .prompt-item-title-input {
+            width: 100%;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            background: white;
+            color: #333;
+        }
+
+        .prompt-item-title-input:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        .prompt-item-actions {
+            display: flex;
+            gap: 5px;
+            margin-left: 10px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-edit {
+            color: #667eea;
+        }
+
+        .btn-delete {
+            color: #dc3545;
+        }
+
+        .btn-rename {
+            color: #28a745;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-size: 0.9rem;
         }
 
         .container {
@@ -26,8 +247,8 @@
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             padding: 40px;
-            max-width: 600px;
-            width: 100%;
+            flex: 1;
+            max-width: 800px;
         }
 
         h1 {
@@ -182,10 +403,46 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            .left-panel {
+                width: 100%;
+                max-height: 400px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="main-wrapper">
+        <div class="left-panel">
+            <h2>📝 Prompts</h2>
+            
+            <div class="prompt-form">
+                <textarea 
+                    id="promptInput" 
+                    class="prompt-input" 
+                    placeholder="Entrez votre prompt ici..."
+                ></textarea>
+                <div class="prompt-actions">
+                    <button id="savePromptBtn" class="btn-small btn-add">Ajouter</button>
+                    <button id="cancelPromptBtn" class="btn-small btn-cancel" style="display: none;">Annuler</button>
+                </div>
+            </div>
+
+            <div id="promptsList" class="prompts-list">
+                <div class="empty-state">Aucun prompt sauvegardé</div>
+            </div>
+        </div>
+
+        <div class="container">
         <h1>🎤 Transcription Audio</h1>
         
         <div id="tokenStatus" class="token-status">
@@ -214,11 +471,304 @@
             <div id="resultText" class="result-text"></div>
             <button id="copyBtn" class="copy-btn">📋 Copier dans le Presse-papiers</button>
         </div>
+        </div>
     </div>
 
     <script>
         let apiToken = '';
         let selectedFile = null;
+        let prompts = [];
+        let editingPromptId = null;
+        let selectedPromptId = 'placeholder'; // Default to placeholder
+
+        // Cookie management functions
+        function setCookie(name, value, days = 365) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                }
+            }
+            return null;
+        }
+
+        function deleteCookie(name) {
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+        }
+
+        // Prompt management functions
+        function loadPrompts() {
+            const promptsJson = getCookie('transcription_prompts');
+            if (promptsJson) {
+                try {
+                    prompts = JSON.parse(promptsJson);
+                } catch (e) {
+                    console.error('Error parsing prompts from cookie:', e);
+                    prompts = [];
+                }
+            } else {
+                prompts = [];
+            }
+            renderPrompts();
+        }
+
+        function savePrompts() {
+            setCookie('transcription_prompts', JSON.stringify(prompts));
+        }
+
+        function addPrompt(text) {
+            if (!text || !text.trim()) {
+                return;
+            }
+            
+            const trimmedText = text.trim();
+            const defaultTitle = trimmedText.split('\n')[0].substring(0, 50) + (trimmedText.split('\n')[0].length > 50 ? '...' : '');
+            
+            const prompt = {
+                id: Date.now().toString(),
+                text: trimmedText,
+                title: defaultTitle,
+                createdAt: new Date().toISOString()
+            };
+            
+            prompts.unshift(prompt);
+            savePrompts();
+            // Reset selection to placeholder after adding
+            selectedPromptId = 'placeholder';
+            renderPrompts();
+            clearPromptInput();
+        }
+
+        function updatePrompt(id, text) {
+            if (!text || !text.trim()) {
+                return;
+            }
+            
+            const prompt = prompts.find(p => p.id === id);
+            if (prompt) {
+                prompt.text = text.trim();
+                // Update title if it's still the default (starts with the beginning of text)
+                if (!prompt.title || prompt.title === prompt.text.split('\n')[0].substring(0, 50) + '...' || prompt.title === prompt.text.split('\n')[0]) {
+                    const defaultTitle = prompt.text.split('\n')[0].substring(0, 50) + (prompt.text.split('\n')[0].length > 50 ? '...' : '');
+                    prompt.title = defaultTitle;
+                }
+                prompt.updatedAt = new Date().toISOString();
+                savePrompts();
+                renderPrompts();
+                clearPromptInput();
+                editingPromptId = null;
+            }
+        }
+
+        function renamePrompt(id) {
+            const prompt = prompts.find(p => p.id === id);
+            if (!prompt) return;
+
+            const titleElement = document.querySelector(`.prompt-item[data-id="${id}"] .prompt-item-title`);
+            if (!titleElement) return;
+
+            const currentTitle = prompt.title || '';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'prompt-item-title-input';
+            input.value = currentTitle;
+            input.style.width = '100%';
+            input.style.flex = '1';
+
+            const saveRename = () => {
+                const newTitle = input.value.trim();
+                if (newTitle) {
+                    prompt.title = newTitle;
+                    savePrompts();
+                    renderPrompts();
+                } else {
+                    renderPrompts();
+                }
+            };
+
+            const cancelRename = () => {
+                renderPrompts();
+            };
+
+            input.addEventListener('blur', saveRename);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveRename();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    cancelRename();
+                }
+            });
+
+            titleElement.replaceWith(input);
+            input.focus();
+            input.select();
+        }
+
+        function deletePrompt(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce prompt ?')) {
+                prompts = prompts.filter(p => p.id !== id);
+                savePrompts();
+                renderPrompts();
+                if (editingPromptId === id) {
+                    clearPromptInput();
+                    editingPromptId = null;
+                }
+            }
+        }
+
+        function clearPromptInput() {
+            document.getElementById('promptInput').value = '';
+            document.getElementById('cancelPromptBtn').style.display = 'none';
+            editingPromptId = null;
+        }
+
+        function startEditingPrompt(id) {
+            const prompt = prompts.find(p => p.id === id);
+            if (prompt) {
+                document.getElementById('promptInput').value = prompt.text;
+                document.getElementById('cancelPromptBtn').style.display = 'block';
+                editingPromptId = id;
+                document.getElementById('promptInput').focus();
+            }
+        }
+
+        function renderPrompts() {
+            const promptsList = document.getElementById('promptsList');
+            
+            // Ensure all prompts have a title (migrate old prompts)
+            prompts.forEach(prompt => {
+                if (!prompt.title) {
+                    const defaultTitle = prompt.text.split('\n')[0].substring(0, 50) + (prompt.text.split('\n')[0].length > 50 ? '...' : '');
+                    prompt.title = defaultTitle;
+                }
+            });
+            savePrompts();
+
+            // Build HTML with placeholder always at the top
+            let html = `
+                <div class="prompt-item-placeholder" data-id="placeholder">
+                    <div class="prompt-item-header">
+                        <div class="prompt-item-title">Pas de prompt</div>
+                    </div>
+                </div>
+            `;
+
+            if (prompts.length === 0) {
+                promptsList.innerHTML = html;
+            } else {
+                const promptsHtml = prompts.map(prompt => {
+                    const title = prompt.title || prompt.text.split('\n')[0].substring(0, 50) + (prompt.text.split('\n')[0].length > 50 ? '...' : '');
+                    
+                    return `
+                        <div class="prompt-item" data-id="${prompt.id}">
+                            <div class="prompt-item-header">
+                                <div class="prompt-item-title">${escapeHtml(title)}</div>
+                                <div class="prompt-item-actions">
+                                    <button class="btn-icon btn-rename" onclick="renamePrompt('${prompt.id}')" title="Renommer">🏷️</button>
+                                    <button class="btn-icon btn-edit" onclick="startEditingPrompt('${prompt.id}')" title="Modifier">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="deletePrompt('${prompt.id}')" title="Supprimer">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                promptsList.innerHTML = html + promptsHtml;
+            }
+
+            // Add click handler for placeholder
+            const placeholderItem = promptsList.querySelector('.prompt-item-placeholder');
+            if (placeholderItem) {
+                // Set placeholder as active if it's the selected one
+                if (selectedPromptId === 'placeholder') {
+                    placeholderItem.classList.add('active');
+                }
+                
+                placeholderItem.addEventListener('click', () => {
+                    // Clear prompt input
+                    document.getElementById('promptInput').value = '';
+                    // Update selected prompt ID
+                    selectedPromptId = 'placeholder';
+                    // Highlight the placeholder
+                    promptsList.querySelectorAll('.prompt-item, .prompt-item-placeholder').forEach(i => i.classList.remove('active'));
+                    placeholderItem.classList.add('active');
+                });
+            }
+
+            // Add click handlers to select prompts
+            promptsList.querySelectorAll('.prompt-item').forEach(item => {
+                const id = item.dataset.id;
+                // Set as active if it's the selected one
+                if (selectedPromptId === id) {
+                    item.classList.add('active');
+                }
+                
+                item.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('btn-icon')) {
+                        return; // Don't select if clicking action buttons
+                    }
+                    const prompt = prompts.find(p => p.id === id);
+                    if (prompt) {
+                        // Update selected prompt ID
+                        selectedPromptId = id;
+                        // Copy prompt text to input
+                        document.getElementById('promptInput').value = prompt.text;
+                        // Highlight the selected item
+                        promptsList.querySelectorAll('.prompt-item, .prompt-item-placeholder').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Prompt form event handlers
+        document.getElementById('savePromptBtn').addEventListener('click', () => {
+            const text = document.getElementById('promptInput').value;
+            if (editingPromptId) {
+                updatePrompt(editingPromptId, text);
+            } else {
+                addPrompt(text);
+            }
+        });
+
+        document.getElementById('cancelPromptBtn').addEventListener('click', () => {
+            clearPromptInput();
+        });
+
+        // Allow Enter+Shift for new line, Enter alone to save
+        // Allow Command-A (Mac) or Ctrl-A (Windows/Linux) to select all
+        document.getElementById('promptInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('savePromptBtn').click();
+            }
+            // Handle Command-A (Mac) or Ctrl-A (Windows/Linux) to select all
+            if ((e.key === 'a' || e.key === 'A') && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                const input = document.getElementById('promptInput');
+                input.select();
+            }
+        });
+
+        // Initialize prompts on page load
+        loadPrompts();
 
         // Extract token from URL fragment
         function extractTokenFromURL() {
@@ -320,6 +870,14 @@
                 formData.append('file', selectedFile);
                 formData.append('model', 'whisper-1');
                 formData.append('language', 'fr');
+                
+                // Add prompt if a real prompt is selected (not placeholder)
+                if (selectedPromptId && selectedPromptId !== 'placeholder') {
+                    const selectedPrompt = prompts.find(p => p.id === selectedPromptId);
+                    if (selectedPrompt && selectedPrompt.text) {
+                        formData.append('prompt', selectedPrompt.text);
+                    }
+                }
 
                 const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
                     method: 'POST',
