@@ -5,23 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Âge de Constance</title>
     <style>
+                body::before {
+                    content: "";
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    z-index: 0;
+                    background: url('https://images.unsplash.com/photo-1595076590135-e070743b31c5?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+                    background-size: cover;
+                    filter: blur(4px) brightness(0.9);
+                    opacity: 0.75;
+                }
         body {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f7f7fa;
             margin: 0;
+            position: relative;
+            z-index: 1;
         }
         .encart {
-            background: white;
+            background: rgba(200, 217, 243, 0.92);
             border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
             padding: 2.5rem 3.5rem;
             font-size: 2rem;
             font-family: 'Segoe UI', Arial, sans-serif;
             text-align: center;
             color: #222;
+            position: relative;
+            z-index: 2;
         }
         .age {
             font-weight: bold;
