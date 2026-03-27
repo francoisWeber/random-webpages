@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Âge de Constance</title>
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f7f7fa;
+            margin: 0;
+        }
+        .encart {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2.5rem 3.5rem;
+            font-size: 2rem;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+            color: #222;
+        }
+        .age {
+            font-weight: bold;
+            color: #3a6ea5;
+        }
+    </style>
+</head>
+<body>
+    <div class="encart">
+        Constance a <span class="age" id="age"></span>
+    </div>
+    <script>
+        function computeAge(from) {
+            const now = new Date();
+            let years = now.getFullYear() - from.getFullYear();
+            let months = now.getMonth() - from.getMonth();
+            let days = now.getDate() - from.getDate();
+            let hours = now.getHours() - from.getHours();
+            let minutes = now.getMinutes() - from.getMinutes();
+            if (minutes < 0) {
+                minutes += 60;
+                hours--;
+            }
+            if (hours < 0) {
+                hours += 24;
+                days--;
+            }
+            if (days < 0) {
+                // Get days in previous month
+                const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += prevMonth.getDate();
+                months--;
+            }
+            if (months < 0) {
+                months += 12;
+                years--;
+            }
+            return { years, months, days, hours };
+        }
+
+        function updateAge() {
+            const birth = new Date(2024, 10, 5, 2, 15); // Mois 10 = novembre (0-indexé)
+            const { years, months, days, hours } = computeAge(birth);
+            let txt = '';
+            if (years > 0) txt += years + (years === 1 ? ' an ' : ' ans ');
+            if (months > 0) txt += months + (months === 1 ? ' mois ' : ' mois ');
+            if (days > 0) txt += days + (days === 1 ? ' jour ' : ' jours ');
+            txt += hours + (hours === 1 ? ' heure' : ' heures');
+            document.getElementById('age').textContent = txt.trim();
+        }
+        updateAge();
+        setInterval(updateAge, 60 * 1000); // Mettre à jour chaque minute
+    </script>
+</body>
+</html>
