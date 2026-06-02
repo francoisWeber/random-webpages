@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combien de temps avant de faire des blagues côte à côte ?</title>
+    <style>
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: url('https://images.unsplash.com/photo-1440428099904-c6d459a7e7b5?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(4px) brightness(0.9);
+            opacity: 0.75;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .encart {
+            background: rgba(200, 217, 243, 0.92);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+            padding: 2.5rem 3.5rem;
+            font-size: 2rem;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+            color: #222;
+            position: relative;
+            z-index: 2;
+        }
+
+        .age {
+            font-weight: bold;
+            color: #3a6ea5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="encart">
+        Les blagues se feront côte à côte
+        <br>
+        dans <span class="age" id="age"></span>
+        <br>
+        ☺️🌶️😁😚
+    </div>
+    <script>
+        function computeCountdown(target) {
+            const now = new Date();
+            if (target <= now) {
+                return null;
+            }
+
+            let years = target.getFullYear() - now.getFullYear();
+            let months = target.getMonth() - now.getMonth();
+            let days = target.getDate() - now.getDate();
+            let hours = target.getHours() - now.getHours();
+            let minutes = target.getMinutes() - now.getMinutes();
+
+            if (minutes < 0) {
+                minutes += 60;
+                hours--;
+            }
+            if (hours < 0) {
+                hours += 24;
+                days--;
+            }
+            if (days < 0) {
+                const prevMonth = new Date(target.getFullYear(), target.getMonth(), 0);
+                days += prevMonth.getDate();
+                months--;
+            }
+            if (months < 0) {
+                months += 12;
+                years--;
+            }
+            return { years, months, days, hours, minutes };
+        }
+
+        function updateAge() {
+            const june14 = new Date(2026, 5, 14, 0, 0); // 14 juin 2026
+            const countdown = computeCountdown(june14);
+
+            if (!countdown) {
+                document.getElementById('age').textContent = "aujourd'hui !";
+                return;
+            }
+
+            const { years, months, days, hours, minutes } = countdown;
+            let txt = '';
+            if (years > 0) txt += years + (years === 1 ? ' an ' : ' ans ');
+            if (months > 0) txt += months + ' mois ';
+            if (days > 0) txt += days + (days === 1 ? ' jour ' : ' jours ');
+            if (hours > 0) txt += hours + (hours === 1 ? ' heure ' : ' heures ');
+            txt += minutes + (minutes === 1 ? ' minute' : ' minutes');
+            document.getElementById('age').textContent = txt.trim();
+        }
+        updateAge();
+        setInterval(updateAge, 60 * 1000);
+    </script>
+</body>
+
+</html>
