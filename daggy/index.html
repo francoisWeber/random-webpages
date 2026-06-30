@@ -263,10 +263,42 @@
       border-color: var(--turquoise);
     }
 
+    #forfaits {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
     .forfait-chip {
       border-radius: 14px;
       padding: 14px 18px;
       text-align: left;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #ece6dc;
+      cursor: pointer;
+      font-weight: 600;
+      background: #fff;
+      transition: all .15s ease;
+      user-select: none;
+    }
+
+    .forfait-chip:hover {
+      border-color: var(--turquoise);
+    }
+
+    .forfait-chip input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .forfait-chip.selected {
+      background: var(--turquoise);
+      color: #fff;
+      border-color: var(--turquoise);
     }
 
     .forfait-chip small {
@@ -575,6 +607,10 @@
         grid-template-columns: 1fr;
       }
 
+      #forfaits {
+        grid-template-columns: 1fr;
+      }
+
       .card {
         padding: 20px 16px;
       }
@@ -664,7 +700,7 @@
         <div class="step-head"><span class="step-num">4</span>
           <h2>Forfait de garde souhaité</h2>
         </div>
-        <div class="chips" id="forfaits"><!-- rempli par le script --></div>
+        <div id="forfaits"><!-- rempli par le script --></div>
       </section>
 
       <div class="error-msg" id="error">Merci de compléter toutes les étapes pour lancer l'estimation.</div>
@@ -801,8 +837,8 @@
     /* ---------- Remplissage dynamique ---------- */
     function initForfaits() {
       const wrap = $("#forfaits");
-      // affichés de 5 vers 2 jours
-      [...CONFIG.forfaits].sort((a, b) => b.jours - a.jours).forEach(f => {
+      // affichés de 2 vers 5 jours
+      [...CONFIG.forfaits].sort((a, b) => a.jours - b.jours).forEach(f => {
         const label = document.createElement("label");
         label.className = "chip forfait-chip";
         label.innerHTML = `<input type="radio" name="forfait" value="${f.id}">${f.nom}
