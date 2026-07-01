@@ -937,7 +937,9 @@
       $("#form").classList.add("hidden");
       const res = $("#resultats");
       res.style.display = "block";
-      res.scrollIntoView({ behavior: "smooth", block: "start" });
+      // On centre la vue sur la carte du forfait choisi
+      const carteChoisie = res.querySelector(".rcard.choisi");
+      (carteChoisie || res).scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     /* ---------- Interactions ---------- */
