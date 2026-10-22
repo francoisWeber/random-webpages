@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BB · Beer Barycenters 🍻</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; display: flex; height: 100vh; height: 100dvh; }
+  aside { width: 340px; flex-shrink: 0; padding: 16px; overflow-y: auto; border-right: 1px solid #f1d9a8; background: linear-gradient(180deg, #fff8e7, #fff1d0); color: #3b2a14; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; letter-spacing: -.5px; color: #b45309; }
+  h1 span { font-size: .8rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #d97706; margin-left: 4px; }
+  .tagline { margin: 0 0 14px; font-size: .85rem; font-style: italic; color: #7c5a2a; }
+  a { color: #b45309; font-weight: 600; }
+  form { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  input, button { font: inherit; padding: 8px 10px; border: 1px solid #e8c984; border-radius: 10px; }
+  input { background: #fffdf7; }
+  input:focus { outline: 2px solid #f59e0b; border-color: #f59e0b; }
+  button { cursor: pointer; background: #fffdf7; transition: transform .1s, box-shadow .1s; }
+  button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 2px 6px #b4530933; }
+  button.primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-color: #d97706; font-weight: 600; }
+  button:disabled { opacity: .5; cursor: default; }
+  ul { list-style: none; padding: 0; margin: 0 0 12px; }
+  li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #e8c984; font-size: .9rem; }
+  li small { display: block; color: #8a6d3b; }
+  li button { padding: 2px 8px; align-self: center; }
+  #status { font-size: .85rem; min-height: 1.2em; color: #b91c1c; margin-bottom: 8px; }
+  #bary { font-size: .9rem; margin-bottom: 12px; padding: 10px 12px; background: #fffdf7; border: 1px solid #f1d9a8; border-radius: 12px; }
+  #bary:empty { display: none; }
+  #map { flex: 1; min-width: 0; min-height: 0; }
+  li > div { min-width: 0; overflow-wrap: anywhere; }
+  li { align-items: center; justify-content: flex-start; }
+  li button { margin-left: auto; flex-shrink: 0; }
+  li .friend { flex-shrink: 0; }
+  #share, #clear { margin-right: 6px; margin-bottom: 6px; }
+  .pin { width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #f59e0b; border: 2px solid #fff; box-shadow: 0 1px 4px #0006; }
+  .friend { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706); color: #fff; border: 2px solid #fff; box-shadow: 0 1px 4px #0006; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: .85rem; }
+  .pin.bary { background: #e11d48; width: 32px; height: 32px; }
+  @media (max-width: 700px) {
+    body { flex-direction: column-reverse; }
+    aside { width: 100%; height: 48%; padding: 12px 12px calc(12px + env(safe-area-inset-bottom)); border-right: 0; border-top: 1px solid #ddd; -webkit-overflow-scrolling: touch; }
+    #map { flex: 1 1 52%; }
+    h1 { font-size: 1.05rem; margin-bottom: 8px; }
+    input, button { font-size: 16px; padding: 10px; }
+    li button { padding: 6px 12px; }
+    #bary a { display: inline-block; padding: 6px 0; }
+  }
+  @media (max-width: 700px) and (orientation: landscape) {
+    body { flex-direction: row; }
+    aside { width: 45%; height: 100%; border-top: 0; border-right: 1px solid #ddd; }
+    #map { flex: 1; }
+  }
+</style>
+</head>
+<body>
+<aside>
+  <h1>🍻 BB <span>Beer Barycenters</span></h1>
+  <p class="tagline">Trouvez le bar qui met tout le monde d'accord (ou presque).</p>
+  <form id="form">
+    <input id="name" placeholder="Prénom du copain (optionnel)" autocomplete="off">
+    <input id="addr" placeholder="Adresse (ex : 10 rue de Rivoli, Paris)" required autocomplete="off">
+    <button class="primary" id="add">Ajouter à la tablée</button>
+  </form>
+  <div id="status"></div>
+  <ul id="list"></ul>
+  <div id="bary"></div>
+  <button id="share" disabled>🔗 Copier le lien de partage</button>
+  <button id="clear" disabled>Tout effacer</button>
+</aside>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const NOMINATIM = 'https://nominatim.openstreetmap.org';
+let people = []; // {name, addr, lat, lon}
+let baryLabel = '';
+
+const $ = id => document.getElementById(id);
+const map = L.map('map').setView([46.6, 2.5], 6);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19, attribution: '© OpenStreetMap contributors',
+  referrerPolicy: 'strict-origin-when-cross-origin'
+}).addTo(map);
+const layer = L.layerGroup().addTo(map);
+
+const badge = (p, i) => {
+  const el = document.createElement('div'); el.className = 'friend';
+  el.textContent = (p.name || String(i + 1)).trim().charAt(0).toUpperCase();
+  return el;
+};
+const friendIcon = (p, i) => {
+  return L.divIcon({ className: '', html: badge(p, i), iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15] });
+};
+const icon = cls => L.divIcon({ className: '', html: `<div class="pin ${cls}"></div>`, iconSize: [26, 26], iconAnchor: [13, 26], popupAnchor: [0, -26] });
+
+// Moyenne sur la sphère (vecteurs 3D), plus juste qu'une moyenne lat/lon brute.
+function barycenter(pts) {
+  let x = 0, y = 0, z = 0;
+  for (const p of pts) {
+    const la = p.lat * Math.PI / 180, lo = p.lon * Math.PI / 180;
+    x += Math.cos(la) * Math.cos(lo); y += Math.cos(la) * Math.sin(lo); z += Math.sin(la);
+  }
+  const n = pts.length; x /= n; y /= n; z /= n;
+  return { lat: Math.atan2(z, Math.hypot(x, y)) * 180 / Math.PI, lon: Math.atan2(y, x) * 180 / Math.PI };
+}
+
+function popup(title, sub) {
+  const d = document.createElement('div');
+  const b = document.createElement('b'); b.textContent = title; d.appendChild(b);
+  if (sub) { d.appendChild(document.createElement('br')); d.appendChild(document.createTextNode(sub)); }
+  return d;
+}
+
+function render() {
+  layer.clearLayers();
+  const list = $('list'); list.textContent = '';
+  people.forEach((p, i) => {
+    L.marker([p.lat, p.lon], { icon: friendIcon(p, i) }).bindPopup(popup(p.name || `Ami ${i + 1}`, p.addr)).addTo(layer);
+    const li = document.createElement('li');
+    const div = document.createElement('div');
+    div.append(p.name || `Ami ${i + 1}`);
+    const sm = document.createElement('small'); sm.textContent = p.addr; div.appendChild(sm);
+    const rm = document.createElement('button'); rm.textContent = '✕'; rm.title = 'Retirer';
+    rm.onclick = () => { people.splice(i, 1); baryLabel = ''; update(); };
+    li.append(badge(p, i), div, rm); list.appendChild(li);
+  });
+
+  const bary = $('bary');
+  bary.textContent = '';
+  if (people.length) {
+    const c = barycenter(people);
+    L.marker([c.lat, c.lon], { icon: icon('bary'), zIndexOffset: 1000 })
+      .bindPopup(popup('Barycentre', baryLabel || `${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}`)).addTo(layer);
+    const b = document.createElement('b'); b.textContent = '🎯 Le point de rendez-vous';
+    bary.append(b, document.createElement('br'), baryLabel || `${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}`);
+    if (people.length > 1) {
+      const a = document.createElement('a');
+      a.href = `https://www.google.com/maps/search/bar/@${c.lat},${c.lon},16z`;
+      a.target = '_blank'; a.rel = 'noopener'; a.textContent = '🍺 Chercher des bars autour';
+      bary.append(document.createElement('br'), a);
+    }
+    const pts = [...people, c].map(p => [p.lat, p.lon]);
+    map.fitBounds(L.latLngBounds(pts).pad(0.3), { maxZoom: 16 });
+  }
+  $('share').disabled = $('clear').disabled = !people.length;
+}
+
+async function resolveBaryLabel() {
+  if (people.length < 2) return;
+  const c = barycenter(people);
+  try {
+    const r = await fetch(`${NOMINATIM}/reverse?format=json&zoom=18&lat=${c.lat}&lon=${c.lon}`);
+    const j = await r.json();
+    if (j.display_name) { baryLabel = j.display_name; render(); }
+  } catch {}
+}
+
+function update() { saveHash(); render(); resolveBaryLabel(); }
+
+// État encodé dans l'URL (#...) : le lien suffit à partager la carte, sans serveur.
+function saveHash() {
+  if (!people.length) { history.replaceState(null, '', location.pathname); return; }
+  const data = people.map(p => [p.name, p.addr, +p.lat.toFixed(6), +p.lon.toFixed(6)]);
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  history.replaceState(null, '', '#' + b64);
+}
+function loadHash() {
+  if (location.hash.length < 2) return;
+  try {
+    const data = JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1)))));
+    people = data.map(([name, addr, lat, lon]) => ({ name: String(name), addr: String(addr), lat: +lat, lon: +lon }))
+      .filter(p => isFinite(p.lat) && isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
+  } catch { people = []; }
+}
+
+$('form').onsubmit = async e => {
+  e.preventDefault();
+  const addr = $('addr').value.trim(); if (!addr) return;
+  $('status').textContent = ''; $('add').disabled = true; $('add').textContent = 'On cherche…';
+  try {
+    const r = await fetch(`${NOMINATIM}/search?format=json&limit=1&q=${encodeURIComponent(addr)}`);
+    const j = await r.json();
+    if (!j.length) throw new Error('Adresse introuvable, essaie d\'être plus précis.');
+    people.push({ name: $('name').value.trim(), addr: j[0].display_name, lat: +j[0].lat, lon: +j[0].lon });
+    $('name').value = ''; $('addr').value = ''; baryLabel = '';
+    update();
+  } catch (err) {
+    $('status').textContent = err.message || 'Erreur de géocodage.';
+  } finally { $('add').disabled = false; $('add').textContent = 'Ajouter à la tablée'; }
+};
+
+$('share').onclick = async () => {
+  try { await navigator.clipboard.writeText(location.href); $('share').textContent = '✅ Lien copié !'; }
+  catch { prompt('Copie ce lien :', location.href); }
+  setTimeout(() => $('share').textContent = '🔗 Copier le lien de partage', 2000);
+};
+$('clear').onclick = () => { people = []; baryLabel = ''; update(); };
+
+loadHash();
+render();
+resolveBaryLabel();
+</script>
+</body>
+</html>
