@@ -112,15 +112,17 @@ function popup(title, sub) {
   return d;
 }
 
-function render() {
+const coords = p => `${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}`;
+
+function render(fit = true) {
   layer.clearLayers();
   const list = $('list'); list.textContent = '';
   people.forEach((p, i) => {
-    L.marker([p.lat, p.lon], { icon: friendIcon(p, i) }).bindPopup(popup(p.name || `Ami ${i + 1}`, p.addr)).addTo(layer);
+    L.marker([p.lat, p.lon], { icon: friendIcon(p, i) }).bindPopup(popup(p.name || `Ami ${i + 1}`, p.addr || coords(p))).addTo(layer);
     const li = document.createElement('li');
     const div = document.createElement('div');
     div.append(p.name || `Ami ${i + 1}`);
-    const sm = document.createElement('small'); sm.textContent = p.addr; div.appendChild(sm);
+    const sm = document.createElement('small'); sm.textContent = p.addr || coords(p); div.appendChild(sm);
     const rm = document.createElement('button'); rm.textContent = '✕'; rm.title = 'Retirer';
     rm.onclick = () => { people.splice(i, 1); baryLabel = ''; update(); };
     li.append(badge(p, i), div, rm); list.appendChild(li);
@@ -141,7 +143,7 @@ function render() {
       bary.append(document.createElement('br'), a);
     }
     const pts = [...people, c].map(p => [p.lat, p.lon]);
-    map.fitBounds(L.latLngBounds(pts).pad(0.3), { maxZoom: 16 });
+    if (fit) map.fitBounds(L.latLngBounds(pts).pad(0.3), { maxZoom: 16 });
   }
   $('share').disabled = $('clear').disabled = !people.length;
 }
@@ -152,26 +154,47 @@ async function resolveBaryLabel() {
   try {
     const r = await fetch(`${NOMINATIM}/reverse?format=json&zoom=18&lat=${c.lat}&lon=${c.lon}`);
     const j = await r.json();
-    if (j.display_name) { baryLabel = j.display_name; render(); }
+    if (j.display_name) { baryLabel = j.display_name; render(false); }
   } catch {}
 }
 
 function update() { saveHash(); render(); resolveBaryLabel(); }
 
-// État encodé dans l'URL (#...) : le lien suffit à partager la carte, sans serveur.
+// État encodé dans l'URL (#...) : par ami, 8 caractères base64url (lat+lon, précision ~11 m) puis le prénom, séparés par "~".
+const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+const LON_SPAN = 3600001;
+function packCoords(lat, lon) {
+  let n = Math.round((lat + 90) * 1e4) * LON_SPAN + Math.round((lon + 180) * 1e4), out = '';
+  for (let i = 0; i < 8; i++) { out = ALPHA[n % 64] + out; n = Math.floor(n / 64); }
+  return out;
+}
+function unpackCoords(str) {
+  let n = 0; for (const ch of str) n = n * 64 + ALPHA.indexOf(ch);
+  return { lat: Math.floor(n / LON_SPAN) / 1e4 - 90, lon: (n % LON_SPAN) / 1e4 - 180 };
+}
+const encName = n => encodeURIComponent(n).replace(/~/g, '%7E');
 function saveHash() {
   if (!people.length) { history.replaceState(null, '', location.pathname); return; }
-  const data = people.map(p => [p.name, p.addr, +p.lat.toFixed(6), +p.lon.toFixed(6)]);
-  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-  history.replaceState(null, '', '#' + b64);
+  history.replaceState(null, '', '#' + people.map(p => packCoords(p.lat, p.lon) + encName(p.name)).join('~'));
 }
 function loadHash() {
   if (location.hash.length < 2) return;
-  try {
-    const data = JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1)))));
-    people = data.map(([name, addr, lat, lon]) => ({ name: String(name), addr: String(addr), lat: +lat, lon: +lon }))
-      .filter(p => isFinite(p.lat) && isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
-  } catch { people = []; }
+  people = location.hash.slice(1).split('~').map(part => {
+    const { lat, lon } = unpackCoords(part.slice(0, 8));
+    let name = ''; try { name = decodeURIComponent(part.slice(8)); } catch {}
+    return { name, addr: '', lat, lon };
+  }).filter(p => isFinite(p.lat) && isFinite(p.lon) && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
+}
+
+async function resolveAddresses() {
+  for (const p of people.filter(p => !p.addr)) {
+    try {
+      const r = await fetch(`${NOMINATIM}/reverse?format=json&zoom=18&lat=${p.lat}&lon=${p.lon}`);
+      const j = await r.json();
+      if (j.display_name && people.includes(p)) { p.addr = j.display_name; render(false); }
+    } catch {}
+    await new Promise(r => setTimeout(r, 1100));
+  }
 }
 
 $('form').onsubmit = async e => {
@@ -200,6 +223,7 @@ $('clear').onclick = () => { people = []; baryLabel = ''; update(); };
 loadHash();
 render();
 resolveBaryLabel();
+resolveAddresses();
 </script>
 </body>
 </html>
